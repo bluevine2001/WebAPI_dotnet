@@ -82,21 +82,25 @@ public class CartsController : ControllerBase{
         return Ok();
     }
 
-    // // remove product from cart
-    // [HttpPost("RemoveProductFromCart/{cartId}")]
-    // public IActionResult RemoveProductFromCart(int cartId, [FromBody] Product _product)
-    // {
-    //     var cart = this._DBContext.Carts.FirstOrDefault(c=> c.Id == cartId);
-    //     if(cart != null){
-    //         //cart.ProductIds += "|"+_product.Id;
-    //         string[] updatedProductIds = cart.ProductIds.Split("|");
-
-    //         string[] test = updatedProductIds.FindAll(updatedProductIds, id => Int32.Parse(id) != _product.Id).ToArray();
-    //         string newIds =String.Join("|", test);
-    //         cart.ProductIds = newIds;
-    //         cart.TotalPrice -= _product.Price;
-    //         this._DBContext.SaveChanges();
-    //     }
-    //     return Ok();
-    // }
+    // remove product from cart
+    [HttpPost("RemoveProductFromCart/{cartId}")]
+    public IActionResult RemoveProductFromCart(int cartId, [FromBody] Product _product)
+    {
+        var cart = this._DBContext.Carts.FirstOrDefault(c=> c.Id == cartId);
+        if(cart != null){
+            string[] updatedProductIds = cart.ProductIds.Split("|");
+            string[] newpids = new string[updatedProductIds.Length];
+            for (int i = 0; i < updatedProductIds.Length; i++)
+            {
+                if(Int32.Parse(updatedProductIds[i]) != _product.Id){
+                    newpids[i] = updatedProductIds[i];
+                }
+            }
+            string newIds = string.Join("|", newpids);
+            cart.ProductIds = newIds;
+            cart.TotalPrice -= _product.Price;
+            this._DBContext.SaveChanges();
+        }
+        return Ok();
+    }
 }
